@@ -135,6 +135,7 @@ cd util/macros || exit
 autoreconf -v --install || exit 1
 ./configure $XORG_CONFIG
 make install
+get_pkgconfig_paths
 cd ../.. || exit
 
 cd proto/xorgproto || exit
@@ -145,6 +146,7 @@ cd build || exit
 meson setup --prefix=$XORG_PREFIX ..
 ninja
 ninja install
+get_pkgconfig_paths
 cd ../../.. || exit
 
 cd lib/libxdmcp || exit
@@ -152,12 +154,14 @@ autoreconf -v --install || exit 1
 ./configure $XORG_CONFIG
 make -j"$(nproc)"
 make -j"$(nproc)" install
+get_pkgconfig_paths
 cd ../.. || exit
 
 cd proto/xcbproto || exit
 autoreconf -v --install || exit 1
 PYTHON=python3 ./configure $XORG_CONFIG
 make install
+get_pkgconfig_paths
 cd ../.. || exit
 
 cd lib/libxau || exit
@@ -165,6 +169,7 @@ autoreconf -v --install || exit 1
 ./configure $XORG_CONFIG
 make -j"$(nproc)"
 make -j"$(nproc)" install
+get_pkgconfig_paths
 cd ../.. || exit
 
 cd lib/libxcb || exit
@@ -173,6 +178,7 @@ autoreconf -v --install || exit 1
     --without-doxygen
 LC_ALL=en_US.UTF-8 make -j"$(nproc)"
 make -j"$(nproc)" install
+get_pkgconfig_paths
 cd ../.. || exit
 
 cd lib/libxtrans || exit
@@ -180,6 +186,7 @@ autoreconf -v --install || exit 1
 ./configure $XORG_CONFIG
 make -j"$(nproc)"
 make -j"$(nproc)" install
+get_pkgconfig_paths
 cd ../.. || exit
 
 cd lib/libx11 || exit
@@ -187,6 +194,7 @@ autoreconf -v --install || exit 1
 ./configure $XORG_CONFIG
 make -j"$(nproc)"
 make -j"$(nproc)" install
+get_pkgconfig_paths
 cd ../.. || exit
 
 ####################################################
