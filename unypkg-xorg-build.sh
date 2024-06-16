@@ -66,6 +66,11 @@ cd xorg/proto || exit
 git_repo="https://gitlab.freedesktop.org/xorg/proto/xorgproto.git"
 git_tag="$(git ls-remote --refs --tags --sort="v:refname" "$git_repo" | grep -E "xorgproto-[0-9.]+$" | tail -n1 | sed "s|.*/||")"
 git clone $gitdepth --recurse-submodules -j8 --single-branch -b "$git_tag" "$git_repo"
+
+# xcbproto
+git_repo="https://gitlab.freedesktop.org/xorg/proto/xcbproto.git"
+git_tag="$(git ls-remote --refs --tags --sort="v:refname" "$git_repo" | grep -E "xcb-proto-[0-9.]+$" | tail -n1 | sed "s|.*/||")"
+git clone $gitdepth --recurse-submodules -j8 --single-branch -b "$git_tag" "$git_repo"
 cd /uny/sources || exit
 
 # libxdmcp
@@ -73,12 +78,25 @@ cd xorg/lib || exit
 git_repo="https://gitlab.freedesktop.org/xorg/lib/libxdmcp.git"
 git_tag="$(git ls-remote --refs --tags --sort="v:refname" "$git_repo" | grep -E "libXdmcp-[0-9.]+$" | tail -n1 | sed "s|.*/||")"
 git clone $gitdepth --recurse-submodules -j8 --single-branch -b "$git_tag" "$git_repo"
-cd /uny/sources || exit
 
-# xcbproto
-cd xorg/proto || exit
-git_repo="https://gitlab.freedesktop.org/xorg/proto/xcbproto.git"
-git_tag="$(git ls-remote --refs --tags --sort="v:refname" "$git_repo" | grep -E "xcb-proto-[0-9.]+$" | tail -n1 | sed "s|.*/||")"
+# libxau
+git_repo="https://gitlab.freedesktop.org/xorg/lib/libxau.git"
+git_tag="$(git ls-remote --refs --tags --sort="v:refname" "$git_repo" | grep -E "libXau-[0-9.]+$" | tail -n1 | sed "s|.*/||")"
+git clone $gitdepth --recurse-submodules -j8 --single-branch -b "$git_tag" "$git_repo"
+
+# libxcb
+git_repo="https://gitlab.freedesktop.org/xorg/lib/libxcb.git"
+git_tag="$(git ls-remote --refs --tags --sort="v:refname" "$git_repo" | grep -E "libxcb-[0-9.]+$" | tail -n1 | sed "s|.*/||")"
+git clone $gitdepth --recurse-submodules -j8 --single-branch -b "$git_tag" "$git_repo"
+
+# libxtrans
+git_repo="https://gitlab.freedesktop.org/xorg/lib/libxtrans.git"
+git_tag="$(git ls-remote --refs --tags --sort="v:refname" "$git_repo" | grep -E "xtrans-[0-9.]+$" | tail -n1 | sed "s|.*/||")"
+git clone $gitdepth --recurse-submodules -j8 --single-branch -b "$git_tag" "$git_repo"
+
+# libx11
+git_repo="https://gitlab.freedesktop.org/xorg/lib/libx11.git"
+git_tag="$(git ls-remote --refs --tags --sort="v:refname" "$git_repo" | grep -E "libX11-[0-9.]+$" | tail -n1 | sed "s|.*/||")"
 git clone $gitdepth --recurse-submodules -j8 --single-branch -b "$git_tag" "$git_repo"
 cd /uny/sources || exit
 
@@ -104,10 +122,11 @@ get_include_paths
 
 unset LD_RUN_PATH
 
-pkgname="xorg"
-pkgver=2.39
-get_env_var_values
-get_include_paths
+#pkgname="xorg"
+#pkgver=2.39
+#get_env_var_values
+#get_include_paths
+
 export XORG_PREFIX=/uny/pkg/"$pkgname"/"$pkgver"
 export XORG_CONFIG="--prefix="$XORG_PREFIX" --sysconfdir=/etc/uny \
     --localstatedir=/var/uny --disable-static"
@@ -133,17 +152,42 @@ autoreconf -v --install || exit 1
 ./configure $XORG_CONFIG
 make -j"$(nproc)"
 make -j"$(nproc)" install
-cd ../../.. || exit
+cd ../.. || exit
 
 cd proto/xcbproto || exit
 autoreconf -v --install || exit 1
 PYTHON=python3 ./configure $XORG_CONFIG
 make install
-cd ../../.. || exit
+cd ../.. || exit
 
+cd lib/libxau || exit
+autoreconf -v --install || exit 1
+./configure $XORG_CONFIG
 make -j"$(nproc)"
-make -j"$(nproc)" check 
 make -j"$(nproc)" install
+cd ../.. || exit
+
+cd lib/libxcb || exit
+autoreconf -v --install || exit 1
+./configure $XORG_CONFIG \
+    --without-doxygen
+LC_ALL=en_US.UTF-8 make -j"$(nproc)"
+make -j"$(nproc)" install
+cd ../.. || exit
+
+cd lib/libxtrans || exit
+autoreconf -v --install || exit 1
+./configure $XORG_CONFIG
+make -j"$(nproc)"
+make -j"$(nproc)" install
+cd ../.. || exit
+
+cd lib/libx11 || exit
+autoreconf -v --install || exit 1
+./configure $XORG_CONFIG
+make -j"$(nproc)"
+make -j"$(nproc)" install
+cd ../.. || exit
 
 ####################################################
 ### End of individual build script
